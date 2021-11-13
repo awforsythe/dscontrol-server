@@ -1,6 +1,7 @@
 #[macro_use] extern crate rocket;
 
 use std::env;
+use postgres::{Client, NoTls, Error};
 use rocket::serde::json::Json;
 use serde::{Serialize};
 
@@ -22,6 +23,11 @@ fn url() -> String {
     )
 }
 
+fn conn() -> Result<Client, Error> {
+    let client = Client::connect(&url(), NoTls)?;
+    Ok(client)
+}
+
 #[derive(Serialize)]
 struct TestStruct {
     name: String,
@@ -39,6 +45,10 @@ fn index() -> Json<TestStruct> {
 
 #[launch]
 fn rocket() -> _ {
-    println!("{}", url());
+    match conn() {
+        Ok(_) => { println!("ok") },
+        Err(e) => { println!("{}", e) },
+    }
+    
     rocket::build().mount("/", routes![index])
 }
