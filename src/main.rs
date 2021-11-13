@@ -15,10 +15,10 @@ fn url() -> String {
     let db_user = var("DB_USER", "postgres");
     let db_pass = var("DB_PASS", "");
     format!("postgresql://{}@{}:{}/{}",
-        if db_pass.is_empty() { db_user } else { format!("{}:{}", db_user, db_pass) },
+        if db_pass.is_empty() { db_user.to_owned() } else { format!("{}:{}", db_user, db_pass) },
         var("DB_HOST", "localhost"),
         var("DB_PORT", "5432"),
-        var("DB_NAME", "postgres"), // can't pass db_user because it's moved above!
+        var("DB_NAME", &db_user),
     )
 }
 
